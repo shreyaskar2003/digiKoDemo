@@ -1,0 +1,71 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In - digiKo</title>
+  <link rel="stylesheet" href="./loginstyle.css" />
+</head>
+
+<body>
+  <div class="login-container">
+    <div class="logo">D</div>
+    <h1>Welcome Back</h1>
+
+    <!-- Messages -->
+    <div class="error-message" id="errorMessage" style="display:none;"></div>
+    <div class="success-message" id="successMessage" style="display:none;"></div>
+
+    <!-- Login Form -->
+    <form id="loginForm" novalidate>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          placeholder="9876543210"
+          required
+          pattern="[0-9]{10}"
+          maxlength="10"
+        />
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="remember" name="remember" />
+        <label for="remember">Remember me</label>
+      </div>
+
+      <button type="submit" class="btn-primary" id="loginBtn">Send OTP</button>
+    </form>
+
+    <!-- ✅ OTP Section (hidden by default) -->
+    <div id="otpSection" style="display:none; margin-top: 20px;">
+      <h3>Enter OTP</h3>
+      <div id="otpInputs" class="otp-inputs">
+        <input type="text" maxlength="1" />
+        <input type="text" maxlength="1" />
+        <input type="text" maxlength="1" />
+        <input type="text" maxlength="1" />
+        <input type="text" maxlength="1" />
+        <input type="text" maxlength="1" />
+      </div>
+      <button id="verifyOtpBtn" class="btn-primary">Verify OTP</button>
+
+      <!-- Optional Resend Option -->
+      <p id="resendTimer" style="margin-top:10px; font-size:14px; color:gray;">Didn’t get OTP? <span id="resendLink" style="color:#007BFF; cursor:pointer;">Resend</span></p>
+    </div>
+
+    <div class="divider">OR</div>
+
+    <div class="signup-link">
+      Don't have an account? <a href="signup.html">Sign up</a>
+    </div>
+
+    <div class="footer">© 2017–2025 digiKo</div>
+  </div>
+
+  <script src="./login.js"></script>
+</body>
+</html>

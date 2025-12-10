@@ -1,0 +1,162 @@
+<!-- signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - digiKo</title>
+  <link rel="stylesheet" href="./signup.css" />
+  <style>
+    /* ✅ OTP Section Styles */
+    #otpSection {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    #otpSection h3 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .otp-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .otp-inputs input {
+      width: 40px;
+      height: 45px;
+      text-align: center;
+      font-size: 1.2rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .otp-inputs input:focus {
+      border-color: #007bff;
+    }
+
+    #verifyOtpBtn {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    #verifyOtpBtn:hover {
+      background-color: #0056b3;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="signup-container">
+    <div class="logo">D</div>
+    <h1>Create Account</h1>
+    <p class="subtitle">Join digiKo today</p>
+
+    <!-- Messages -->
+    <div class="error-message" id="errorMessage" style="display:none;"></div>
+    <div class="success-message" id="successMessage" style="display:none;"></div>
+
+    <!-- Signup Form -->
+    <form id="signupForm" novalidate>
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your full name" required minlength="3" />
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="9876543210" required pattern="[0-9]{10}"
+          maxlength="10" />
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="terms" name="terms" required />
+        <label for="terms">
+          I agree to the
+          <a href="#">Terms of Service</a> and
+          <a href="#">Privacy Policy</a>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary" id="signupBtn">Send OTP</button>
+    </form>
+
+    <!-- ✅ Hidden OTP Section -->
+    <div id="otpSection">
+      <h3>Enter OTP</h3>
+      <div class="otp-inputs" id="otpInputs">
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+      </div>
+      <button id="verifyOtpBtn">Verify OTP</button>
+    </div>
+
+    <div class="divider">OR</div>
+
+    <div class="login-link">
+      Already have an account? <a href="./login.html">Sign in</a>
+    </div>
+
+    <div class="footer">© 2017–2025 digiKo</div>
+  </div>
+
+  <!-- ✅ Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- ✅ Signup Script -->
+  <script src="./signup.js"></script>
+
+  <!-- ✅ OTP Input Auto-Focus Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const inputs = document.querySelectorAll("#otpInputs input");
+
+      inputs.forEach((input, index) => {
+        input.addEventListener("input", (e) => {
+          // move to next box if value entered
+          if (e.target.value && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          }
+        });
+
+        input.addEventListener("keydown", (e) => {
+          // move back if pressing backspace on empty field
+          if (e.key === "Backspace" && !e.target.value && index > 0) {
+            inputs[index - 1].focus();
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

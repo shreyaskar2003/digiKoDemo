@@ -1,0 +1,6 @@
+project url- https://dnmtwlnqeesubepyipsx.supabase.co
+anon key- eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRubXR3bG5xZWVzdWJlcHlpcHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzMjc5MDAsImV4cCI6MjA3NzkwMzkwMH0.EluGCx_iZxFOv0PGF949vVD6BHeL6Tkh_LuiI9lFv8o
+
+Twilio Code for Recovery: HBEWKL9M4KA8JTHNRVN1YC7W
+
+Vonage: pOMJctfj0gg7PMSs

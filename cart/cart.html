@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - digiKo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body style="background:#f8f9fa;">
+
+    <div class="container py-5">
+        <h2 class="mb-4">🛒 Your Cart</h2>
+
+        <div id="cart-container" class="row"></div>
+
+        <hr>
+
+        <div class="d-flex justify-content-between">
+            <h4>Total: ₹<span id="totalAmount">0</span></h4>
+
+            <button id="checkoutBtn" class="btn btn-primary btn-lg">
+                Proceed to Checkout →
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.1/dist/umd/supabase.js"></script>
+    <script src="./cart.js"></script>
+</body>
+
+</html>

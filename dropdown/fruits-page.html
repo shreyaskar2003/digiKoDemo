@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Order fresh fruits online in Kothri Kalan with fast home delivery." />
+  <title>Fruits - digiKo</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: #fbfbfd;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, sans-serif;
+    }
+
+    .btn-yellow {
+      background: #ffd700;
+      color: #000;
+      font-weight: 600;
+      border: none;
+      transition: 0.25s;
+    }
+
+    .btn-yellow:hover {
+      background: #000;
+      color: #fff;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #e8e8ed;
+      transition: 0.35s;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-card:hover {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+      transform: translateY(-4px);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      padding: 20px;
+      background: #fafafa;
+    }
+
+    .discount-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #ff3b30;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .fresh-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: #34c759;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .current-price {
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .original-price {
+      text-decoration: line-through;
+      color: #888;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container py-5">
+    <div class="row">
+      <!-- Filters -->
+      <div class="col-lg-3 mb-4">
+        <div class="filter-section bg-white p-3 rounded" style="border:1px solid #e8e8ed;">
+          <h5 class="mb-3">Filters</h5>
+          <p style="color:#777;">(Coming soon)</p>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0">Fruits</h4>
+          <div>
+            <select class="form-select form-select-sm w-auto" id="sortSelect">
+              <option value="relevance">Relevance</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="discount">Discount</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row g-4" id="products-container">
+          <!-- dynamic cards inserted here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase UMD -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.1/dist/umd/supabase.js"></script>
+
+  <script>
+    // Use a different variable name so we don't shadow the global 'supabase' object
+    const db = supabase.createClient(
+      "https://dnmtwlnqeesubepyipsx.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRubXR3bG5xZWVzdWJlcHlpcHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzMjc5MDAsImV4cCI6MjA3NzkwMzkwMH0.EluGCx_iZxFOv0PGF949vVD6BHeL6Tkh_LuiI9lFv8o"
+    );
+
+    // Local fallback image path (you uploaded a screenshot earlier).
+    // The path below is taken from your uploaded file: /mnt/data/ae1805ba-671b-49c3-beb9-3c6cfb61b33d.png
+    // (This is only a temporary visual fallback while testing locally.)
+    const FALLBACK_IMG = "/mnt/data/ae1805ba-671b-49c3-beb9-3c6cfb61b33d.png";
+
+    async function loadFruits(sort = 'relevance') {
+      console.log("Fetching fruit items (type = 'fruits')…");
+
+      let query = db.from('items').select('*').eq('type', 'fruits');
+
+      // simple client-side ordering (you may prefer server-side sorting later)
+      const { data: items, error } = await query;
+
+      if (error) {
+        console.error("Supabase error:", error);
+        document.getElementById('products-container').innerHTML =
+          `<div class="col-12"><div class="alert alert-danger">Failed to load items. Check console.</div></div>`;
+        return;
+      }
+
+      if (!items || items.length === 0) {
+        document.getElementById('products-container').innerHTML =
+          `<div class="col-12"><div class="alert alert-info">No fruits available right now.</div></div>`;
+        console.log("No items returned for type='fruits'.");
+        return;
+      }
+
+      // client-side sort if requested
+      let sorted = [...items];
+      if (sort === 'price_asc') sorted.sort((a, b) => Number(a.price) - Number(b.price));
+      else if (sort === 'price_desc') sorted.sort((a, b) => Number(b.price) - Number(a.price));
+      else if (sort === 'discount') sorted.sort((a, b) => (b.discount || 0) - (a.discount || 0));
+
+      const container = document.getElementById('products-container');
+      container.innerHTML = '';
+
+      sorted.forEach(p => {
+        // use the item's image_url if present; otherwise the fallback local path
+        const img = p.image_url && p.image_url.length ? p.image_url : FALLBACK_IMG;
+
+        container.insertAdjacentHTML('beforeend', `
+          <div class="col-lg-4 col-md-6">
+            <div class="card product-card position-relative">
+              ${p.discount ? `<span class="discount-badge">${p.discount}% OFF</span>` : ''}
+              <span class="fresh-badge">FRESH</span>
+              <img src="${img}" class="product-image" alt="${escapeHtml(p.name)}" onerror="this.src='${FALLBACK_IMG}'" />
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <small class="text-muted">⏰ ${p.delivery_time || '8 mins'}</small>
+                  ${p.mrp ? `<small class="original-price">₹${p.mrp}</small>` : ''}
+                </div>
+                <h6 class="product-title">${escapeHtml(p.name)}</h6>
+                <p class="text-muted mb-2">${escapeHtml(p.quantity || '')}</p>
+
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="current-price">₹${p.price}</span>
+                    ${p.mrp ? `<span class="original-price">₹${p.mrp}</span>` : ''}
+                  </div>
+                  <button class="btn btn-yellow btn-add" onclick="addToCart(${p.id}, event)">Add</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `);
+      });
+
+      console.log(`Rendered ${sorted.length} fruit items.`);
+    }
+
+    // small helper to avoid XSS in inserted HTML
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+  // --- helper: get logged-in user from localStorage ---
+function getLoggedInUser() {
+  const u = localStorage.getItem("loggedInUser");
+  return u ? JSON.parse(u) : null;
+}
+
+// --- helper: find or create a cart in Supabase DB ---
+async function getOrCreateCart(userId) {
+  const { data: existing, error } = await db
+    .from("carts")
+    .select("id")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (existing && existing.id) {
+    return existing.id;
+  }
+
+  // create a new cart
+  const { data: created, error: err2 } = await db
+    .from("carts")
+    .insert({ user_id: userId })
+    .select()
+    .single();
+
+  return created.id;
+}
+
+// --- MAIN addToCart FUNCTION ---
+async function addToCart(id, event) {
+  const user = getLoggedInUser();
+
+  // extract product details from UI
+  const card = event.target.closest(".product-card");
+  const name = card.querySelector(".product-title").innerText;
+  const price = parseFloat(card.querySelector(".current-price").innerText.replace("₹", ""));
+  const image = card.querySelector("img").src;
+
+  // -------------------------------------------
+  // 1️⃣ USER NOT LOGGED IN → use localStorage
+  // -------------------------------------------
+  if (!user) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const item = cart.find(x => x.id === id);
+
+    if (item) item.qty++;
+    else cart.push({ id, name, price, image, qty: 1 });
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
+  // -------------------------------------------
+  // 2️⃣ USER LOGGED IN → store in Supabase
+  // -------------------------------------------
+  else {
+    const userId = user.id;
+
+    // get existing cart or create new one
+    const cartId = await getOrCreateCart(userId);
+
+    // check if product already exists in DB cart
+    const { data: existing, error } = await db
+      .from("cart_items")
+      .select("*")
+      .eq("cart_id", cartId)
+      .eq("product_id", id)
+      .maybeSingle();
+
+    if (existing) {
+      // increase quantity
+      await db
+        .from("cart_items")
+        .update({ quantity: existing.quantity + 1 })
+        .eq("id", existing.id);
+    } else {
+      // insert new item
+      await db
+        .from("cart_items")
+        .insert({
+          cart_id: cartId,
+          product_id: id,
+          quantity: 1
+        });
+    }
+  }
+
+  // -------------------------------------------
+  // UI BUTTON FEEDBACK
+  // -------------------------------------------
+  const btn = event.target;
+  btn.innerText = "Added ✓";
+  btn.style.background = "#34c759";
+  btn.style.color = "#fff";
+  setTimeout(() => {
+    btn.innerText = "Add";
+    btn.style.background = "#ffd700";
+    btn.style.color = "#000";
+  }, 1200);
+}
+
+
+    // wire up sorting select
+    document.addEventListener('DOMContentLoaded', () => {
+      const sortSelect = document.getElementById('sortSelect');
+      sortSelect.addEventListener('change', () => loadFruits(sortSelect.value));
+      // initial load
+      loadFruits();
+    });
+  </script>
+</body>
+
+</html>
